@@ -58,6 +58,26 @@
 
 ## 快速开始
 
+### 0. 构建前准备
+
+本项目需要在本地有《Slay the Spire 2》安装目录，因为编译时会直接引用游戏目录中的：
+
+- `sts2.dll`
+- `0Harmony.dll`
+- `Steamworks.NET.dll`
+
+因此：
+
+- 不能依赖 GitHub Actions 直接构建
+- 需要在本地 Windows / macOS 机器上手动 build
+- Windows 侧推荐使用标准版 Godot `4.5.1` 来打 `pck`，不要依赖不完整的 mono 发行包
+
+Windows 本地构建建议准备：
+
+- `.NET SDK 9`
+- Godot `4.5.1` 标准版可执行文件，例如 `Godot_v4.5.1-stable_win64_console.exe`
+- 本地可用的游戏目录，例如 `<SteamLibrary>\steamapps\common\Slay the Spire 2`
+
 ### 1. 构建
 
 macOS：
@@ -80,6 +100,20 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build-sts2-lan-connect-window
 
 Windows 建议优先使用标准版 Godot 4.5.1 可执行文件来打 `pck`。
 
+Windows 推荐直接显式传参：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\build-sts2-lan-connect-windows.ps1 `
+  -Sts2Root '<SteamLibrary>\steamapps\common\Slay the Spire 2' `
+  -GodotBin '<GodotDir>\Godot_v4.5.1-stable_win64_console.exe'
+```
+
+构建成功后：
+
+- `sts2_lan_connect.dll` 会输出到 `sts2-lan-connect/.godot/mono/temp/bin/Debug/`
+- `sts2_lan_connect.pck` 会输出到 `sts2-lan-connect/build/`
+- 默认情况下脚本还会把这两个文件复制到游戏目录下的 `mods/sts2_lan_connect/`
+
 ### 2. 打包
 
 macOS：
@@ -93,6 +127,23 @@ Windows：
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\package-sts2-lan-connect-windows.ps1
 ```
+
+Windows 推荐显式传参：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\package-sts2-lan-connect-windows.ps1 `
+  -Sts2Root '<SteamLibrary>\steamapps\common\Slay the Spire 2' `
+  -GodotBin '<GodotDir>\Godot_v4.5.1-stable_win64_console.exe'
+```
+
+打包成功后会生成：
+
+- 本地发布目录：`sts2-lan-connect/release/sts2_lan_connect/`
+- 本地 zip 包：`sts2-lan-connect/release/sts2_lan_connect-v0.1.2-windows.zip`
+
+如果你希望把预编译包也提交到仓库，通常再手动复制一份到：
+
+- `releases/sts2_lan_connect-v0.1.2-windows.zip`
 
 ### 3. 一键安装
 
@@ -110,14 +161,6 @@ powershell -ExecutionPolicy Bypass -File .\scripts\install-sts2-lan-connect-wind
 ```
 
 ## 构建说明
-
-这个项目编译时需要引用游戏安装目录里的：
-
-- `sts2.dll`
-- `0Harmony.dll`
-- `Steamworks.NET.dll`
-
-因此无法在 GitHub Actions 上自动构建，需要在本地有游戏安装的环境中手动构建。
 
 当前版本：
 
