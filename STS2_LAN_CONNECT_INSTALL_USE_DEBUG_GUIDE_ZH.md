@@ -88,7 +88,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\install-sts2-lan-connect-wind
 
 1. 把 MOD 文件安装到游戏目录
 2. 把无 MOD 存档单向同步到 modded 存档目录
-3. 先备份已有的 modded 存档，再覆盖缺失或更旧的文件
+3. 只补齐缺失的 modded 文件，不覆盖任何已存在的 modded 文件
 
 ### 2.3 安装路径
 

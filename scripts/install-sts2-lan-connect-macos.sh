@@ -27,7 +27,7 @@ Options:
 Behavior:
   1. Copies the mod files into the game's mods/sts2_lan_connect directory.
   2. Performs a one-way sync from non-modded saves into modded saves.
-  3. Backs up any existing modded profile saves before overwriting newer files.
+  3. Copies only missing files into modded saves and never overwrites existing modded files.
 
 Notes:
   - Close the game before running this script.
@@ -108,28 +108,8 @@ if [[ ! -d "$USERDATA_DIR" ]]; then
   exit 0
 fi
 
-timestamp="$(date +%Y%m%d-%H%M%S)"
-backup_root="$USERDATA_DIR/sts2_lan_connect_backups/$timestamp"
 profiles_synced=0
 files_copied=0
-backups_created=0
-
-backup_profile_if_needed() {
-  local source_profile="$1"
-  local backup_profile="$2"
-
-  if [[ ! -d "$source_profile" ]]; then
-    return
-  fi
-
-  if ! find "$source_profile" -type f -print -quit | grep -q .; then
-    return
-  fi
-
-  mkdir -p "$(dirname "$backup_profile")"
-  cp -R "$source_profile" "$backup_profile"
-  backups_created=$((backups_created + 1))
-}
 
 sync_profile_saves() {
   local platform_name="$1"
@@ -147,7 +127,6 @@ sync_profile_saves() {
   dest_profile="$user_dir/modded/$profile_name"
   dest_saves="$dest_profile/saves"
 
-  backup_profile_if_needed "$dest_profile" "$backup_root/$platform_name/$(basename "$user_dir")/$profile_name"
   mkdir -p "$dest_saves"
 
   while IFS= read -r -d '' source_file; do
@@ -157,7 +136,7 @@ sync_profile_saves() {
     dest_file="$dest_saves/$relative_path"
     mkdir -p "$(dirname "$dest_file")"
 
-    if [[ ! -e "$dest_file" || "$source_file" -nt "$dest_file" ]]; then
+    if [[ ! -e "$dest_file" ]]; then
       cp -f "$source_file" "$dest_file"
       files_copied=$((files_copied + 1))
     fi
@@ -177,5 +156,5 @@ for platform_name in steam default; do
   done < <(find "$platform_dir" -mindepth 1 -maxdepth 1 -type d -print0)
 done
 
-log "Save sync finished. Profiles scanned: $profiles_synced, files copied: $files_copied, backups created: $backups_created"
-log "This is a one-way sync from vanilla saves into modded saves. Re-run the installer any time you want to sync again."
+log "Save sync finished. Profiles scanned: $profiles_synced, missing files copied: $files_copied"
+log "This is a one-way sync from vanilla saves into modded saves. Existing modded files are never overwritten."

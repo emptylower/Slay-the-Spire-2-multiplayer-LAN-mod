@@ -51,8 +51,8 @@ install-sts2-lan-connect-windows.bat
 
 安装脚本会顺手做一次从“无 MOD 存档”到“modded 存档”的单向同步：
 
-- 先备份已有 modded 存档
-- 复制缺失或更旧的文件
+- 只复制缺失文件
+- 不覆盖任何已存在的 modded 文件
 - 不删除 modded 目录里已有的额外文件
 
 如果只想安装，不想同步存档：

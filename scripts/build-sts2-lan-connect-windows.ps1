@@ -15,6 +15,9 @@ $ProjectFile = Join-Path $ProjectDir "$AssemblyName.csproj"
 $PckSource = Join-Path $ProjectDir "build\$AssemblyName.pck"
 $DllSource = Join-Path $ProjectDir ".godot\mono\temp\bin\Debug\$AssemblyName.dll"
 $TempModsDir = Join-Path $RootDir ".build_output\mods\$AssemblyName"
+$GodotAppDataDir = Join-Path $RootDir ".build_output\appdata"
+$GodotLocalAppDataDir = Join-Path $RootDir ".build_output\localappdata"
+$GodotTempDir = Join-Path $RootDir ".build_output\tmp"
 
 function Write-Info {
     param([string]$Message)
@@ -154,6 +157,7 @@ Write-Info "Using game dir: $resolvedGameDir"
 Write-Info "Using Godot: $resolvedGodotBin"
 
 New-Item -ItemType Directory -Force -Path $TempModsDir | Out-Null
+New-Item -ItemType Directory -Force -Path $GodotAppDataDir, $GodotLocalAppDataDir, $GodotTempDir | Out-Null
 
 $buildArgs = @(
     "build",
@@ -167,9 +171,27 @@ if ($LASTEXITCODE -ne 0) {
     throw "dotnet build failed."
 }
 
-& $resolvedGodotBin --headless --path $ProjectDir --script (Join-Path $ProjectDir "tools\build_pck.gd")
-if ($LASTEXITCODE -ne 0) {
-    throw "Godot PCK build failed."
+try {
+    $previousAppData = $env:APPDATA
+    $previousLocalAppData = $env:LOCALAPPDATA
+    $previousTemp = $env:TEMP
+    $previousTmp = $env:TMP
+
+    $env:APPDATA = $GodotAppDataDir
+    $env:LOCALAPPDATA = $GodotLocalAppDataDir
+    $env:TEMP = $GodotTempDir
+    $env:TMP = $GodotTempDir
+
+    & $resolvedGodotBin --headless --path $ProjectDir --script (Join-Path $ProjectDir "tools\build_pck.gd")
+    if ($LASTEXITCODE -ne 0) {
+        throw "Godot PCK build failed."
+    }
+}
+finally {
+    $env:APPDATA = $previousAppData
+    $env:LOCALAPPDATA = $previousLocalAppData
+    $env:TEMP = $previousTemp
+    $env:TMP = $previousTmp
 }
 
 if (-not (Test-Path $DllSource)) {

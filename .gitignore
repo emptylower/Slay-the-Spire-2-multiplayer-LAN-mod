@@ -2,6 +2,7 @@
 .godot/
 .mono/
 .build_output/
+.tmp_build_mod/
 .dotnet_cli/
 .msbuild_sdks/
 .nuget_packages/
@@ -11,6 +12,7 @@
 .vscode/.ropeproject/
 sts2-RMP-Mods/
 sts2-lan-connect/release/
+sts2-lan-connect/config.json
 local-release/
 NuGet.Config
 **/.DS_Store

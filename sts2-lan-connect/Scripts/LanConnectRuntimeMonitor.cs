@@ -1,5 +1,7 @@
 using Godot;
 using MegaCrit.Sts2.Core.Logging;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Nodes.Multiplayer;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 
 namespace Sts2LanConnect.Scripts;
@@ -25,6 +27,9 @@ internal sealed partial class LanConnectRuntimeMonitor : Node
 
     public override void _Process(double delta)
     {
+        LanChatSync.Tick();
+        LanPlayerProfileSync.Tick(delta);
+
         _timeUntilScan -= delta;
         if (_timeUntilScan > 0d)
         {
@@ -79,6 +84,35 @@ internal sealed partial class LanConnectRuntimeMonitor : Node
         else if (node is NMultiplayerHostSubmenu hostSubmenu)
         {
             HostSubmenuPatches.ScheduleEnsureLanHostButton(hostSubmenu, "runtime_monitor");
+        }
+        else if (node is NRemoteLobbyPlayerContainer lobbyPlayerContainer)
+        {
+            LanChatSync.ObserveStartLobbyContainer(lobbyPlayerContainer);
+            LanChatUiPatches.EnsureLobbyChatPanel(lobbyPlayerContainer);
+            LanPlayerProfileSync.ObserveStartLobbyContainer(lobbyPlayerContainer);
+        }
+        else if (node is NRemoteLoadLobbyPlayerContainer loadLobbyPlayerContainer)
+        {
+            LanChatSync.ObserveLoadLobbyContainer(loadLobbyPlayerContainer);
+            LanChatUiPatches.EnsureLobbyChatPanel(loadLobbyPlayerContainer);
+            LanPlayerProfileSync.ObserveLoadLobbyContainer(loadLobbyPlayerContainer);
+        }
+        else if (node is NGlobalUi globalUi)
+        {
+            LanChatSync.ObserveRunUi();
+            LanChatUiPatches.EnsureRunChatPanel(globalUi);
+        }
+        else if (node is NMultiplayerPlayerStateContainer)
+        {
+            LanPlayerProfileSync.ObservePlayerStateContainer();
+        }
+        else if (node is NRemoteLobbyPlayer remoteLobbyPlayer)
+        {
+            LanPlayerProfileSync.ApplyDisplayName(remoteLobbyPlayer);
+        }
+        else if (node is NMultiplayerPlayerState multiplayerPlayerState)
+        {
+            LanPlayerProfileSync.ApplyDisplayName(multiplayerPlayerState);
         }
 
         foreach (Node child in node.GetChildren())
