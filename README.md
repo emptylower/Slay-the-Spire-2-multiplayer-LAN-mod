@@ -42,6 +42,15 @@
 - `STS2_LAN_CONNECT_INSTALL_USE_DEBUG_GUIDE_ZH.md`
   安装、使用与调试说明
 
+## 下载预编译版本
+
+如果你不想自己构建,可以直接下载预编译的发布包:
+
+- **Windows 版本**: [`releases/sts2_lan_connect-v0.1.1-windows.zip`](releases/sts2_lan_connect-v0.1.1-windows.zip)
+- **macOS 版本**: 暂未提供预编译版本,请参考下方构建说明自行构建
+
+下载后解压,然后参考 [3. 一键安装](#3-一键安装) 进行安装。
+
 ## 快速开始
 
 ### 1. 构建
@@ -95,7 +104,7 @@ Windows：
 powershell -ExecutionPolicy Bypass -File .\scripts\install-sts2-lan-connect-windows.ps1 -PackageDir .\sts2-lan-connect\release\sts2_lan_connect
 ```
 
-## GitHub Actions
+## 构建说明
 
 这个项目编译时需要引用游戏安装目录里的：
 
@@ -103,33 +112,12 @@ powershell -ExecutionPolicy Bypass -File .\scripts\install-sts2-lan-connect-wind
 - `0Harmony.dll`
 - `Steamworks.NET.dll`
 
-因此默认不能依赖 GitHub 托管 runner，仓库里的 workflow 按 `self-hosted` 设计。
+因此无法在 GitHub Actions 上自动构建,需要在本地有游戏安装的环境中手动构建。
 
-建议准备两个 runner：
-
-- `self-hosted`, `windows`, `sts2`
-- `self-hosted`, `macOS`, `sts2`
-
-可选的仓库变量：
-
-- `STS2_ROOT_WINDOWS`
-- `GODOT_BIN_WINDOWS`
-- `DOTNET_BIN_WINDOWS`
-- `STS2_ROOT_MACOS`
-- `GODOT_BIN_MACOS`
-- `DOTNET_BIN_MACOS`
-
-如果这些变量为空，脚本会优先尝试自动探测标准 Steam 安装路径与 PATH 中的 `godot` / `dotnet`。
-
-工作流行为：
-
-- 推送分支或手动触发：构建并上传 `macOS / Windows` zip artifact
-- 推送 `v*` tag：构建并自动发布到 GitHub Releases
-
-当前计划发布版本：
+当前版本：
 
 - MOD 版本：`0.1.1`
-- 对应 Release tag：`v0.1.1`
+- Release tag：`v0.1.1`
 
 ## 典型联机流程
 
