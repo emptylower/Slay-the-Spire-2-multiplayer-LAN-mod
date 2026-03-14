@@ -146,7 +146,7 @@ internal static class JoinFriendScreenPatches
         }
 
         LanConnectConfig.LastEndpoint = raw;
-        ulong netId = LanConnectNetUtil.GenerateClientNetId();
+        ulong netId = LanConnectConfig.ClientNetId;
         ENetClientConnectionInitializer initializer = new(netId, ip, port);
         TaskHelper.RunSafely(screen.JoinGameAsync(initializer));
     }

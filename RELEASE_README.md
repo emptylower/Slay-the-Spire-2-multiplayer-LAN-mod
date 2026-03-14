@@ -2,10 +2,16 @@
 
 这是 `STS2 LAN Connect` 的发布目录。
 
+当前版本：
+
+- MOD 版本：`0.1.1`
+- GitHub Release tag：`v0.1.1`
+
 ## 目录内容
 
 - `sts2_lan_connect.dll`
 - `sts2_lan_connect.pck`
+- `mod_manifest.json`
 - `STS2_LAN_CONNECT_USER_GUIDE_ZH.md`
 - `install-sts2-lan-connect-macos.sh`
 - `install-sts2-lan-connect-windows.ps1`
@@ -16,7 +22,9 @@
 `STS2 LAN Connect` 会给《杀戮尖塔 2》多人界面增加一条局域网联机路径：
 
 - 多人首页新增 `局域网创建`
+- 多人首页新增 `局域网继续`
 - Join 页面新增 `LAN IP` 输入框和 `Join via IP`
+- 房主地址弹窗支持一键复制 `IP:Port`
 
 ## 一键安装
 
@@ -54,7 +62,7 @@ install-sts2-lan-connect-windows.bat
 
 ## 基本使用
 
-1. 房主进入多人模式首页，点击 `局域网创建`
+1. 房主进入多人模式首页，点击 `局域网创建` 或 `局域网继续`
 2. 房主把自己的局域网 IP / 虚拟局域网 IP 发给队友
 3. 队友进入 `加入` 页面
 4. 在 `LAN IP` 输入框中填写 `IP` 或 `IP:33771`

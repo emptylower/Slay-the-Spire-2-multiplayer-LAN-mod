@@ -9,6 +9,8 @@ namespace Sts2LanConnect.Scripts;
 internal sealed class LanConnectConfigData
 {
     public string LastEndpoint { get; set; } = string.Empty;
+
+    public ulong ClientNetId { get; set; }
 }
 
 internal static class LanConnectConfig
@@ -39,6 +41,23 @@ internal static class LanConnectConfig
 
                 _data.LastEndpoint = value;
                 SaveUnsafe();
+            }
+        }
+    }
+
+    public static ulong ClientNetId
+    {
+        get
+        {
+            lock (Sync)
+            {
+                if (_data.ClientNetId <= LanConnectConstants.LanHostNetId)
+                {
+                    _data.ClientNetId = LanConnectNetUtil.GenerateClientNetId();
+                    SaveUnsafe();
+                }
+
+                return _data.ClientNetId;
             }
         }
     }

@@ -15,6 +15,8 @@ internal static class MultiplayerSubmenuPatches
     private const int DuplicateWithoutSignals = 14;
     private const string HookedMetaKey = "sts2_lan_connect_multiplayer_hooks";
     private static readonly FieldInfo? LoadingOverlayField = typeof(NMultiplayerSubmenu).GetField("_loadingOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
+    private static readonly FieldInfo? HostButtonField = typeof(NMultiplayerSubmenu).GetField("_hostButton", BindingFlags.Instance | BindingFlags.NonPublic);
+    private static readonly FieldInfo? LoadButtonField = typeof(NMultiplayerSubmenu).GetField("_loadButton", BindingFlags.Instance | BindingFlags.NonPublic);
     private static readonly FieldInfo? StackField = typeof(NSubmenu).GetField("_stack", BindingFlags.Instance | BindingFlags.NonPublic);
 
     internal static void ScheduleEnsureLanCreateButton(NMultiplayerSubmenu submenu, string source)
@@ -47,21 +49,29 @@ internal static class MultiplayerSubmenuPatches
             return;
         }
 
-        bool alreadyInstalled = FindLanCreateButton(submenu) != null;
-        EnsureLanCreateButton(submenu);
-        if (!alreadyInstalled && FindLanCreateButton(submenu) != null)
+        bool hadCreateButton = FindLanCreateButton(submenu) != null;
+        bool hadContinueButton = FindLanContinueButton(submenu) != null;
+        EnsureLanButtons(submenu);
+        if ((!hadCreateButton && FindLanCreateButton(submenu) != null) || (!hadContinueButton && FindLanContinueButton(submenu) != null))
         {
-            NSubmenuButton hostButton = submenu.GetNode<NSubmenuButton>("ButtonContainer/HostButton");
-            Node? parent = hostButton.GetParent();
-            Log.Info($"sts2_lan_connect injected LAN create button via {source}; hostButton={hostButton.GetPath()}, parentType={parent?.GetType().FullName ?? "<null>"}");
+            NSubmenuButton? hostButton = ResolveButton(submenu, HostButtonField, "ButtonContainer/HostButton");
+            Node? parent = hostButton?.GetParent();
+            Log.Info($"sts2_lan_connect injected LAN multiplayer buttons via {source}; hostButton={hostButton?.GetPath().ToString() ?? "<null>"}, parentType={parent?.GetType().FullName ?? "<null>"}");
         }
     }
 
-    internal static void EnsureLanCreateButton(NMultiplayerSubmenu submenu)
+    internal static void EnsureLanButtons(NMultiplayerSubmenu submenu)
     {
         try
         {
-            NSubmenuButton hostButton = submenu.GetNode<NSubmenuButton>("ButtonContainer/HostButton");
+            NSubmenuButton? hostButton = ResolveButton(submenu, HostButtonField, "ButtonContainer/HostButton");
+            NSubmenuButton? loadButton = ResolveButton(submenu, LoadButtonField, "ButtonContainer/LoadButton");
+            if (hostButton == null || loadButton == null)
+            {
+                Log.Error($"sts2_lan_connect failed to resolve multiplayer submenu buttons. hostNull={hostButton == null} loadNull={loadButton == null}");
+                return;
+            }
+
             NSubmenuButton? lanButton = FindLanCreateButton(submenu);
             if (lanButton == null)
             {
@@ -80,13 +90,33 @@ internal static class MultiplayerSubmenuPatches
                 parent.MoveChild(lanButton, hostButton.GetIndex() + 1);
             }
 
-            // Mirror the official create card visibility when a multiplayer run save exists.
             lanButton.Visible = hostButton.Visible;
             lanButton.SetEnabled(hostButton.IsEnabled);
+
+            NSubmenuButton? lanContinueButton = FindLanContinueButton(submenu);
+            if (lanContinueButton == null)
+            {
+                Node parent = loadButton.GetParent();
+                lanContinueButton = loadButton.Duplicate(DuplicateWithoutSignals) as NSubmenuButton;
+                if (lanContinueButton == null)
+                {
+                    Log.Error("sts2_lan_connect failed to duplicate LoadButton for LAN continue button.");
+                    return;
+                }
+
+                lanContinueButton.Name = LanConnectConstants.MultiplayerLanContinueButtonName;
+                ConfigureLanContinueButton(lanContinueButton);
+                lanContinueButton.Connect(NClickableControl.SignalName.Released, Callable.From<NButton>(_ => OnLanContinuePressed(submenu)));
+                parent.AddChild(lanContinueButton);
+                parent.MoveChild(lanContinueButton, loadButton.GetIndex() + 1);
+            }
+
+            lanContinueButton.Visible = loadButton.Visible;
+            lanContinueButton.SetEnabled(loadButton.IsEnabled);
         }
         catch (Exception ex)
         {
-            Log.Error($"sts2_lan_connect failed to inject LAN create button: {ex}");
+            Log.Error($"sts2_lan_connect failed to inject LAN multiplayer buttons: {ex}");
         }
     }
 
@@ -104,6 +134,20 @@ internal static class MultiplayerSubmenuPatches
         TaskHelper.RunSafely(LanConnectHostFlow.StartLanHostAsync(GameMode.Standard, loadingOverlay, stack));
     }
 
+    private static void OnLanContinuePressed(NMultiplayerSubmenu submenu)
+    {
+        Control? loadingOverlay = LoadingOverlayField?.GetValue(submenu) as Control;
+        NSubmenuStack? stack = StackField?.GetValue(submenu) as NSubmenuStack;
+        if (loadingOverlay == null || stack == null)
+        {
+            Log.Error($"sts2_lan_connect could not resolve top-level continue flow dependencies. loadingOverlayNull={loadingOverlay == null} stackNull={stack == null}");
+            LanConnectPopupUtil.ShowInfo("未能继续 LAN 联机存档：页面上下文未就绪，请重新打开多人页面后再试。");
+            return;
+        }
+
+        TaskHelper.RunSafely(LanConnectHostFlow.StartLanContinueAsync(loadingOverlay, stack));
+    }
+
     private static void ConfigureLanCreateButton(NSubmenuButton button)
     {
         MegaLabel title = button.GetNode<MegaLabel>("%Title");
@@ -112,8 +156,26 @@ internal static class MultiplayerSubmenuPatches
         description.Text = "创建一个局域网房间，安装本 MOD 的玩家可通过内网 IP 直连。";
     }
 
+    private static void ConfigureLanContinueButton(NSubmenuButton button)
+    {
+        MegaLabel title = button.GetNode<MegaLabel>("%Title");
+        MegaRichTextLabel description = button.GetNode<MegaRichTextLabel>("%Description");
+        title.SetTextAutoSize("局域网继续");
+        description.Text = "继续已保存的局域网多人存档。仅原房间成员可重新加入。";
+    }
+
     private static NSubmenuButton? FindLanCreateButton(NMultiplayerSubmenu submenu)
     {
         return submenu.FindChild(LanConnectConstants.MultiplayerLanCreateButtonName, recursive: true, owned: false) as NSubmenuButton;
+    }
+
+    private static NSubmenuButton? FindLanContinueButton(NMultiplayerSubmenu submenu)
+    {
+        return submenu.FindChild(LanConnectConstants.MultiplayerLanContinueButtonName, recursive: true, owned: false) as NSubmenuButton;
+    }
+
+    private static NSubmenuButton? ResolveButton(NMultiplayerSubmenu submenu, FieldInfo? field, string fallbackPath)
+    {
+        return field?.GetValue(submenu) as NSubmenuButton ?? submenu.GetNodeOrNull<NSubmenuButton>(fallbackPath);
     }
 }
