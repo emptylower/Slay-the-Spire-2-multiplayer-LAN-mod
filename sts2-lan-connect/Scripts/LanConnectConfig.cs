@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
+using Godot;
 using MegaCrit.Sts2.Core.Logging;
 
 namespace Sts2LanConnect.Scripts;
@@ -11,6 +13,14 @@ internal sealed class LanConnectConfigData
     public string LastEndpoint { get; set; } = string.Empty;
 
     public ulong ClientNetId { get; set; }
+
+    public string PreferredPlayerName { get; set; } = string.Empty;
+
+    public float? ChatPanelPositionX { get; set; }
+
+    public float? ChatPanelPositionY { get; set; }
+
+    public bool ChatPanelCollapsed { get; set; }
 }
 
 internal static class LanConnectConfig
@@ -62,6 +72,91 @@ internal static class LanConnectConfig
         }
     }
 
+    public static string PreferredPlayerName
+    {
+        get
+        {
+            lock (Sync)
+            {
+                return _data.PreferredPlayerName;
+            }
+        }
+        set
+        {
+            string normalized = LanPlayerProfileRegistry.NormalizeDisplayName(value);
+            lock (Sync)
+            {
+                if (_data.PreferredPlayerName == normalized)
+                {
+                    return;
+                }
+
+                _data.PreferredPlayerName = normalized;
+                SaveUnsafe();
+            }
+
+            LanPlayerProfileSync.MarkLocalProfileDirty();
+        }
+    }
+
+    public static Vector2? ChatPanelPosition
+    {
+        get
+        {
+            lock (Sync)
+            {
+                if (!_data.ChatPanelPositionX.HasValue || !_data.ChatPanelPositionY.HasValue)
+                {
+                    return null;
+                }
+
+                return new Vector2(_data.ChatPanelPositionX.Value, _data.ChatPanelPositionY.Value);
+            }
+        }
+    }
+
+    public static void SetChatPanelPosition(Vector2 position)
+    {
+        lock (Sync)
+        {
+            if (_data.ChatPanelPositionX.HasValue &&
+                _data.ChatPanelPositionY.HasValue &&
+                Math.Abs(_data.ChatPanelPositionX.Value - position.X) < 0.5f &&
+                Math.Abs(_data.ChatPanelPositionY.Value - position.Y) < 0.5f)
+            {
+                return;
+            }
+
+            _data.ChatPanelPositionX = position.X;
+            _data.ChatPanelPositionY = position.Y;
+            SaveUnsafe();
+        }
+    }
+
+    public static bool ChatPanelCollapsed
+    {
+        get
+        {
+            lock (Sync)
+            {
+                return _data.ChatPanelCollapsed;
+            }
+        }
+        set
+        {
+            lock (Sync)
+            {
+                if (_data.ChatPanelCollapsed == value)
+                {
+                    return;
+                }
+
+                _data.ChatPanelCollapsed = value;
+                SaveUnsafe();
+            }
+        }
+    }
+
     public static void Load()
     {
         lock (Sync)
@@ -75,8 +170,9 @@ internal static class LanConnectConfig
 
             try
             {
-                string json = File.ReadAllText(path);
+                string json = File.ReadAllText(path, Encoding.UTF8);
                 _data = JsonSerializer.Deserialize<LanConnectConfigData>(json) ?? new LanConnectConfigData();
+                _data.PreferredPlayerName = LanPlayerProfileRegistry.NormalizeDisplayName(_data.PreferredPlayerName);
             }
             catch (Exception ex)
             {
@@ -95,7 +191,7 @@ internal static class LanConnectConfig
         {
             WriteIndented = true
         });
-        File.WriteAllText(path, json);
+        File.WriteAllText(path, json, Encoding.UTF8);
     }
 
     private static string GetConfigPath()

@@ -18,6 +18,7 @@ internal static class JoinFriendScreenPatches
         {
             InstallLanJoinControls(screen);
             RefreshStoredEndpoint(screen);
+            RefreshStoredPlayerName(screen);
         }
         catch (Exception ex)
         {
@@ -108,13 +109,31 @@ internal static class JoinFriendScreenPatches
             CustomMinimumSize = new Vector2(160f, 0f)
         };
 
+        Label playerNameTitle = new()
+        {
+            Text = "联机昵称（可选）",
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+
+        NMegaLineEdit playerNameInput = new()
+        {
+            Name = LanConnectConstants.PlayerNameInputName,
+            PlaceholderText = "留空则使用默认 LAN 名称",
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            Text = LanConnectConfig.PreferredPlayerName
+        };
+
         joinButton.Connect(Button.SignalName.Pressed, Callable.From(() => JoinByEndpoint(screen)));
         endpointInput.Connect(LineEdit.SignalName.TextSubmitted, Callable.From<string>(_ => JoinByEndpoint(screen)));
+        playerNameInput.Connect(LineEdit.SignalName.TextSubmitted, Callable.From<string>(_ => SaveCurrentPlayerName(screen)));
+        playerNameInput.Connect(Control.SignalName.FocusExited, Callable.From(() => SaveCurrentPlayerName(screen)));
 
         row.AddChild(endpointInput);
         row.AddChild(joinButton);
         container.AddChild(title);
         container.AddChild(row);
+        container.AddChild(playerNameTitle);
+        container.AddChild(playerNameInput);
 
         parent.AddChild(container);
         parent.MoveChild(container, buttonContainer.GetIndex() + 1);
@@ -129,8 +148,25 @@ internal static class JoinFriendScreenPatches
         }
     }
 
+    private static void RefreshStoredPlayerName(NJoinFriendScreen screen)
+    {
+        NMegaLineEdit? playerNameInput = FindPlayerNameInput(screen);
+        if (playerNameInput == null || playerNameInput.HasFocus())
+        {
+            return;
+        }
+
+        string preferredName = LanConnectConfig.PreferredPlayerName;
+        if (!string.Equals(playerNameInput.Text, preferredName, StringComparison.Ordinal))
+        {
+            playerNameInput.Text = preferredName;
+        }
+    }
+
     private static void JoinByEndpoint(NJoinFriendScreen screen)
     {
+        SaveCurrentPlayerName(screen);
+
         NMegaLineEdit? endpointInput = FindEndpointInput(screen);
         if (endpointInput == null)
         {
@@ -159,5 +195,25 @@ internal static class JoinFriendScreenPatches
     private static NMegaLineEdit? FindEndpointInput(NJoinFriendScreen screen)
     {
         return screen.FindChild(LanConnectConstants.EndpointInputName, recursive: true, owned: false) as NMegaLineEdit;
+    }
+
+    private static NMegaLineEdit? FindPlayerNameInput(NJoinFriendScreen screen)
+    {
+        return screen.FindChild(LanConnectConstants.PlayerNameInputName, recursive: true, owned: false) as NMegaLineEdit;
+    }
+
+    private static void SaveCurrentPlayerName(NJoinFriendScreen screen)
+    {
+        NMegaLineEdit? playerNameInput = FindPlayerNameInput(screen);
+        if (playerNameInput == null)
+        {
+            return;
+        }
+
+        LanConnectConfig.PreferredPlayerName = playerNameInput.Text;
+        if (!string.Equals(playerNameInput.Text, LanConnectConfig.PreferredPlayerName, StringComparison.Ordinal))
+        {
+            playerNameInput.Text = LanConnectConfig.PreferredPlayerName;
+        }
     }
 }

@@ -1,0 +1,11 @@
+{
+  "id": "sts2_lan_connect",
+  "name": "STS2 LAN Connect",
+  "author": "Slay-the-Spire-2-multiplayer-LAN-mod",
+  "description": "Adds LAN host/join support to Slay the Spire 2 multiplayer.",
+  "version": "0.1.3",
+  "has_pck": true,
+  "has_dll": true,
+  "dependencies": [],
+  "affects_gameplay": true
+}

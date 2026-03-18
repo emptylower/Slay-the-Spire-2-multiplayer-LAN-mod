@@ -9,6 +9,8 @@ public static class Entry
     public static void Init()
     {
         LanConnectConfig.Load();
+        LanChatSync.Reset();
+        LanPlayerProfileSync.Reset();
         LanConnectRuntimeMonitor.Install();
         Log.Info("sts2_lan_connect initialized with runtime monitor.");
     }

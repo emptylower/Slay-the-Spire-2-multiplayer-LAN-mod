@@ -52,6 +52,7 @@ internal static class MultiplayerSubmenuPatches
         bool hadCreateButton = FindLanCreateButton(submenu) != null;
         bool hadContinueButton = FindLanContinueButton(submenu) != null;
         EnsureLanButtons(submenu);
+        EnsurePlayerNameControls(submenu);
         if ((!hadCreateButton && FindLanCreateButton(submenu) != null) || (!hadContinueButton && FindLanContinueButton(submenu) != null))
         {
             NSubmenuButton? hostButton = ResolveButton(submenu, HostButtonField, "ButtonContainer/HostButton");
@@ -122,6 +123,8 @@ internal static class MultiplayerSubmenuPatches
 
     private static void OnLanCreatePressed(NMultiplayerSubmenu submenu)
     {
+        SaveCurrentPlayerName(submenu);
+
         Control? loadingOverlay = LoadingOverlayField?.GetValue(submenu) as Control;
         NSubmenuStack? stack = StackField?.GetValue(submenu) as NSubmenuStack;
         if (loadingOverlay == null || stack == null)
@@ -136,6 +139,8 @@ internal static class MultiplayerSubmenuPatches
 
     private static void OnLanContinuePressed(NMultiplayerSubmenu submenu)
     {
+        SaveCurrentPlayerName(submenu);
+
         Control? loadingOverlay = LoadingOverlayField?.GetValue(submenu) as Control;
         NSubmenuStack? stack = StackField?.GetValue(submenu) as NSubmenuStack;
         if (loadingOverlay == null || stack == null)
@@ -164,6 +169,68 @@ internal static class MultiplayerSubmenuPatches
         description.Text = "继续已保存的局域网多人存档。仅原房间成员可重新加入。";
     }
 
+    private static void EnsurePlayerNameControls(NMultiplayerSubmenu submenu)
+    {
+        if (FindPlayerNameContainer(submenu) != null)
+        {
+            RefreshStoredPlayerName(submenu);
+            return;
+        }
+
+        NSubmenuButton? hostButton = ResolveButton(submenu, HostButtonField, "ButtonContainer/HostButton");
+        Control? buttonContainer = hostButton?.GetParent<Control>();
+        Control? parent = buttonContainer?.GetParent<Control>();
+        if (buttonContainer == null || parent == null)
+        {
+            return;
+        }
+
+        VBoxContainer container = new()
+        {
+            Name = LanConnectConstants.PlayerNameContainerName,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            SizeFlagsVertical = Control.SizeFlags.ShrinkBegin
+        };
+
+        Label title = new()
+        {
+            Text = "联机昵称（可选）",
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+
+        NMegaLineEdit input = new()
+        {
+            Name = LanConnectConstants.PlayerNameInputName,
+            PlaceholderText = "留空则使用默认 LAN 名称",
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            Text = LanConnectConfig.PreferredPlayerName
+        };
+
+        input.Connect(LineEdit.SignalName.TextSubmitted, Callable.From<string>(_ => SaveCurrentPlayerName(submenu)));
+        input.Connect(Control.SignalName.FocusExited, Callable.From(() => SaveCurrentPlayerName(submenu)));
+
+        container.AddChild(title);
+        container.AddChild(input);
+
+        parent.AddChild(container);
+        parent.MoveChild(container, buttonContainer.GetIndex() + 1);
+    }
+
+    private static void RefreshStoredPlayerName(NMultiplayerSubmenu submenu)
+    {
+        NMegaLineEdit? input = FindPlayerNameInput(submenu);
+        if (input == null || input.HasFocus())
+        {
+            return;
+        }
+
+        string preferredName = LanConnectConfig.PreferredPlayerName;
+        if (!string.Equals(input.Text, preferredName, StringComparison.Ordinal))
+        {
+            input.Text = preferredName;
+        }
+    }
+
     private static NSubmenuButton? FindLanCreateButton(NMultiplayerSubmenu submenu)
     {
         return submenu.FindChild(LanConnectConstants.MultiplayerLanCreateButtonName, recursive: true, owned: false) as NSubmenuButton;
@@ -172,6 +239,31 @@ internal static class MultiplayerSubmenuPatches
     private static NSubmenuButton? FindLanContinueButton(NMultiplayerSubmenu submenu)
     {
         return submenu.FindChild(LanConnectConstants.MultiplayerLanContinueButtonName, recursive: true, owned: false) as NSubmenuButton;
+    }
+
+    private static Control? FindPlayerNameContainer(NMultiplayerSubmenu submenu)
+    {
+        return submenu.FindChild(LanConnectConstants.PlayerNameContainerName, recursive: true, owned: false) as Control;
+    }
+
+    private static NMegaLineEdit? FindPlayerNameInput(NMultiplayerSubmenu submenu)
+    {
+        return submenu.FindChild(LanConnectConstants.PlayerNameInputName, recursive: true, owned: false) as NMegaLineEdit;
+    }
+
+    private static void SaveCurrentPlayerName(NMultiplayerSubmenu submenu)
+    {
+        NMegaLineEdit? input = FindPlayerNameInput(submenu);
+        if (input == null)
+        {
+            return;
+        }
+
+        LanConnectConfig.PreferredPlayerName = input.Text;
+        if (!string.Equals(input.Text, LanConnectConfig.PreferredPlayerName, StringComparison.Ordinal))
+        {
+            input.Text = LanConnectConfig.PreferredPlayerName;
+        }
     }
 
     private static NSubmenuButton? ResolveButton(NMultiplayerSubmenu submenu, FieldInfo? field, string fallbackPath)

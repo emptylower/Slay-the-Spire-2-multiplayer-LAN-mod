@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_DIR="$ROOT_DIR/sts2-lan-connect"
 ASSEMBLY_NAME="sts2_lan_connect"
 PROJECT_FILE="$PROJECT_DIR/$ASSEMBLY_NAME.csproj"
+MANIFEST_SOURCE="$PROJECT_DIR/$ASSEMBLY_NAME.json"
 PCK_SOURCE="$PROJECT_DIR/build/$ASSEMBLY_NAME.pck"
 DLL_SOURCE="$PROJECT_DIR/.godot/mono/temp/bin/Debug/$ASSEMBLY_NAME.dll"
 TEMP_MODS_DIR="$ROOT_DIR/.build_output/mods/$ASSEMBLY_NAME"
@@ -212,6 +213,7 @@ mkdir -p "$TEMP_MODS_DIR"
 
 [[ -f "$DLL_SOURCE" ]] || die "Expected DLL not found: $DLL_SOURCE"
 [[ -f "$PCK_SOURCE" ]] || die "Expected PCK not found: $PCK_SOURCE"
+[[ -f "$MANIFEST_SOURCE" ]] || die "Expected manifest not found: $MANIFEST_SOURCE"
 
 if [[ "$SKIP_INSTALL_COPY" -eq 1 ]]; then
   log "Build complete. Install copy skipped."
@@ -219,8 +221,9 @@ if [[ "$SKIP_INSTALL_COPY" -eq 1 ]]; then
 fi
 
 mkdir -p "$RESOLVED_MODS_DIR"
-rm -f "$RESOLVED_MODS_DIR/"*.dll "$RESOLVED_MODS_DIR/"*.pck
+rm -f "$RESOLVED_MODS_DIR/"*.dll "$RESOLVED_MODS_DIR/"*.pck "$RESOLVED_MODS_DIR/"*.json
 cp "$DLL_SOURCE" "$RESOLVED_MODS_DIR/"
 cp "$PCK_SOURCE" "$RESOLVED_MODS_DIR/"
+cp "$MANIFEST_SOURCE" "$RESOLVED_MODS_DIR/"
 
 log "MOD files copied to: $RESOLVED_MODS_DIR"
