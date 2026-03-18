@@ -12,6 +12,7 @@ $RootDir = Split-Path -Parent $PSScriptRoot
 $ProjectDir = Join-Path $RootDir "sts2-lan-connect"
 $AssemblyName = "sts2_lan_connect"
 $ProjectFile = Join-Path $ProjectDir "$AssemblyName.csproj"
+$ManifestSource = Join-Path $ProjectDir "$AssemblyName.json"
 $PckSource = Join-Path $ProjectDir "build\$AssemblyName.pck"
 $DllSource = Join-Path $ProjectDir ".godot\mono\temp\bin\Debug\$AssemblyName.dll"
 $TempModsDir = Join-Path $RootDir ".build_output\mods\$AssemblyName"
@@ -202,12 +203,18 @@ if (-not (Test-Path $PckSource)) {
     throw "Expected PCK not found: $PckSource"
 }
 
+if (-not (Test-Path $ManifestSource)) {
+    throw "Expected manifest not found: $ManifestSource"
+}
+
 if (-not $SkipInstallCopy) {
     New-Item -ItemType Directory -Force -Path $resolvedModsDir | Out-Null
     Remove-Item (Join-Path $resolvedModsDir "*.dll") -Force -ErrorAction SilentlyContinue
     Remove-Item (Join-Path $resolvedModsDir "*.pck") -Force -ErrorAction SilentlyContinue
+    Remove-Item (Join-Path $resolvedModsDir "*.json") -Force -ErrorAction SilentlyContinue
     Copy-Item $DllSource -Destination $resolvedModsDir -Force
     Copy-Item $PckSource -Destination $resolvedModsDir -Force
+    Copy-Item $ManifestSource -Destination $resolvedModsDir -Force
     Write-Info "MOD files copied to: $resolvedModsDir"
 } else {
     Write-Info "Build complete. Install copy skipped."

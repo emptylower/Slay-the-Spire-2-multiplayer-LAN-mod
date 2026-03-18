@@ -23,11 +23,12 @@ function Resolve-PackageDir {
 
     $dllPath = Join-Path $Candidate "$AssemblyName.dll"
     $pckPath = Join-Path $Candidate "$AssemblyName.pck"
-    if ((Test-Path $dllPath) -and (Test-Path $pckPath)) {
+    $manifestPath = Join-Path $Candidate "$AssemblyName.json"
+    if ((Test-Path $dllPath) -and (Test-Path $pckPath) -and (Test-Path $manifestPath)) {
         return (Resolve-Path $Candidate).Path
     }
 
-    throw "Package directory '$Candidate' does not contain $AssemblyName.dll and $AssemblyName.pck"
+    throw "Package directory '$Candidate' does not contain $AssemblyName.dll, $AssemblyName.pck, and $AssemblyName.json"
 }
 
 function Get-SteamLibraryRoots {
@@ -152,8 +153,12 @@ $targetModDir = Join-Path (Join-Path $resolvedGameDir "mods") $AssemblyName
 New-Item -ItemType Directory -Force -Path $targetModDir | Out-Null
 
 Write-Info "Installing mod files to: $targetModDir"
+Remove-Item -Path (Join-Path $targetModDir "*.dll") -Force -ErrorAction SilentlyContinue
+Remove-Item -Path (Join-Path $targetModDir "*.pck") -Force -ErrorAction SilentlyContinue
+Remove-Item -Path (Join-Path $targetModDir "*.json") -Force -ErrorAction SilentlyContinue
 Copy-Item -Path (Join-Path $resolvedPackageDir "$AssemblyName.dll") -Destination $targetModDir -Force
 Copy-Item -Path (Join-Path $resolvedPackageDir "$AssemblyName.pck") -Destination $targetModDir -Force
+Copy-Item -Path (Join-Path $resolvedPackageDir "$AssemblyName.json") -Destination $targetModDir -Force
 
 $guideFile = Join-Path $resolvedPackageDir "STS2_LAN_CONNECT_USER_GUIDE_ZH.md"
 if (Test-Path $guideFile) {

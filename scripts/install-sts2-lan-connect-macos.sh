@@ -20,7 +20,7 @@ Options:
   --app-path <path>     SlayTheSpire2.app full path.
   --game-dir <path>     Game root directory that contains SlayTheSpire2.app.
   --data-dir <path>     SlayTheSpire2 user data directory.
-  --package-dir <path>  Directory that contains sts2_lan_connect.dll/.pck.
+  --package-dir <path>  Directory that contains sts2_lan_connect.dll/.pck/.json.
   --no-save-sync        Install the mod only; skip save migration/sync.
   --help                Show this help.
 
@@ -80,8 +80,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ ! -f "$PACKAGE_DIR/$ASSEMBLY_NAME.dll" || ! -f "$PACKAGE_DIR/$ASSEMBLY_NAME.pck" ]]; then
-  die "Package directory '$PACKAGE_DIR' does not contain $ASSEMBLY_NAME.dll and $ASSEMBLY_NAME.pck"
+if [[ ! -f "$PACKAGE_DIR/$ASSEMBLY_NAME.dll" || ! -f "$PACKAGE_DIR/$ASSEMBLY_NAME.pck" || ! -f "$PACKAGE_DIR/$ASSEMBLY_NAME.json" ]]; then
+  die "Package directory '$PACKAGE_DIR' does not contain $ASSEMBLY_NAME.dll, $ASSEMBLY_NAME.pck, and $ASSEMBLY_NAME.json"
 fi
 
 if [[ ! -d "$APP_PATH" ]]; then
@@ -92,8 +92,10 @@ TARGET_MOD_DIR="$APP_PATH/Contents/MacOS/mods/$ASSEMBLY_NAME"
 mkdir -p "$TARGET_MOD_DIR"
 
 log "Installing mod files to: $TARGET_MOD_DIR"
+rm -f "$TARGET_MOD_DIR/"*.dll "$TARGET_MOD_DIR/"*.pck "$TARGET_MOD_DIR/"*.json
 cp -f "$PACKAGE_DIR/$ASSEMBLY_NAME.dll" "$TARGET_MOD_DIR/"
 cp -f "$PACKAGE_DIR/$ASSEMBLY_NAME.pck" "$TARGET_MOD_DIR/"
+cp -f "$PACKAGE_DIR/$ASSEMBLY_NAME.json" "$TARGET_MOD_DIR/"
 if [[ -f "$PACKAGE_DIR/STS2_LAN_CONNECT_USER_GUIDE_ZH.md" ]]; then
   cp -f "$PACKAGE_DIR/STS2_LAN_CONNECT_USER_GUIDE_ZH.md" "$TARGET_MOD_DIR/"
 fi

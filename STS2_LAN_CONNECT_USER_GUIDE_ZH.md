@@ -18,8 +18,15 @@
 
 目录内至少应包含：
 
+- `sts2_lan_connect.json`
 - `sts2_lan_connect.dll`
 - `sts2_lan_connect.pck`
+
+说明：
+
+- 官方 `v0.99.1` 之后，`json` 才是模组声明所必需的文件
+- 是否需要 `.dll` / `.pck` 由 `json` 内的字段声明
+- `STS2 LAN Connect` 当前仍然同时使用 `.dll` 和 `.pck`，所以这三个文件都需要一起安装
 
 ### Windows
 
@@ -47,7 +54,7 @@ Mac 版实际加载目录在 `.app` 内：
 
 这两个脚本都会做两件事：
 
-1. 一键把 `sts2_lan_connect.dll` 和 `sts2_lan_connect.pck` 安装到游戏 `mods` 目录
+1. 一键把 `sts2_lan_connect.json`、`sts2_lan_connect.dll` 和 `sts2_lan_connect.pck` 安装到游戏 `mods` 目录
 2. 把无 MOD 存档单向同步到 modded 存档目录
 
 同步规则：

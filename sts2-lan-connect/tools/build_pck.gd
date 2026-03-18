@@ -3,7 +3,6 @@ extends SceneTree
 const OUTPUT_DIR := "res://build"
 const OUTPUT_FILE := "res://build/sts2_lan_connect.pck"
 const ROOT_FILES := [
-	"res://mod_manifest.json",
 	"res://mod_image.png"
 ]
 const RESOURCE_DIRS := [

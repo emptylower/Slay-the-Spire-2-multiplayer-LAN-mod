@@ -10,8 +10,16 @@
 
 当前版本：
 
-- MOD 版本：`0.1.2`
-- GitHub Release tag：`v0.1.2`
+- MOD 版本：`0.1.3`
+- GitHub Release tag：`v0.1.3`
+
+## v0.99.1 适配
+
+- 适配官方 `v0.99.1` 的新模组清单结构
+- 官方现在以独立的 `<mod_id>.json` 作为模组声明入口，`json` 本身才是必需文件
+- `json` 需要声明该模组是否包含 `.pck` / `.dll`
+- 本项目实现逻辑不变，但由于仍然依赖 Godot 资源和 C# 程序集，所以发布包继续包含 `sts2_lan_connect.json`、`sts2_lan_connect.dll` 和 `sts2_lan_connect.pck`
+- 旧的 `mod_manifest.json` 不再打进 `.pck`
 
 ## 当前功能
 
@@ -51,7 +59,7 @@
 
 如果你不想自己构建，可以直接下载预编译的发布包：
 
-- **Windows 版本**: [`releases/sts2_lan_connect-v0.1.2-windows.zip`](releases/sts2_lan_connect-v0.1.2-windows.zip)
+- **Windows 版本**: [`releases/sts2_lan_connect-v0.1.3-windows.zip`](releases/sts2_lan_connect-v0.1.3-windows.zip)
 - **macOS 版本**: 暂未提供预编译版本，请参考下方构建说明自行构建
 
 下载后解压，然后参考 [3. 一键安装](#3-一键安装) 进行安装。
@@ -112,7 +120,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build-sts2-lan-connect-window
 
 - `sts2_lan_connect.dll` 会输出到 `sts2-lan-connect/.godot/mono/temp/bin/Debug/`
 - `sts2_lan_connect.pck` 会输出到 `sts2-lan-connect/build/`
-- 默认情况下脚本还会把这两个文件复制到游戏目录下的 `mods/sts2_lan_connect/`
+- `sts2_lan_connect.json` 位于 `sts2-lan-connect/`
+- 默认情况下脚本还会把这三个文件复制到游戏目录下的 `mods/sts2_lan_connect/`
 
 ### 2. 打包
 
@@ -139,11 +148,11 @@ powershell -ExecutionPolicy Bypass -File .\scripts\package-sts2-lan-connect-wind
 打包成功后会生成：
 
 - 本地发布目录：`sts2-lan-connect/release/sts2_lan_connect/`
-- 本地 zip 包：`sts2-lan-connect/release/sts2_lan_connect-v0.1.2-windows.zip`
+- 本地 zip 包：`sts2-lan-connect/release/sts2_lan_connect-v0.1.3-windows.zip`
 
 如果你希望把预编译包也提交到仓库，通常再手动复制一份到：
 
-- `releases/sts2_lan_connect-v0.1.2-windows.zip`
+- `releases/sts2_lan_connect-v0.1.3-windows.zip`
 
 ### 3. 一键安装
 
@@ -164,8 +173,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\install-sts2-lan-connect-wind
 
 当前版本：
 
-- MOD 版本：`0.1.2`
-- Release tag：`v0.1.2`
+- MOD 版本：`0.1.3`
+- Release tag：`v0.1.3`
 
 ## 典型联机流程
 
@@ -190,14 +199,14 @@ powershell -ExecutionPolicy Bypass -File .\scripts\install-sts2-lan-connect-wind
 
 当前打包文件：
 
-- `releases/sts2_lan_connect-v0.1.2-windows.zip`
-- `sts2-lan-connect/release/sts2_lan_connect-v0.1.2-windows.zip`
+- `releases/sts2_lan_connect-v0.1.3-windows.zip`
+- `sts2-lan-connect/release/sts2_lan_connect-v0.1.3-windows.zip`
 
 发布包内包含：
 
 - `sts2_lan_connect.dll`
 - `sts2_lan_connect.pck`
-- `mod_manifest.json`
+- `sts2_lan_connect.json`
 - `README.md`
 - `STS2_LAN_CONNECT_USER_GUIDE_ZH.md`
 - `install-sts2-lan-connect-macos.sh`

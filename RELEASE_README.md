@@ -4,14 +4,20 @@
 
 当前版本：
 
-- MOD 版本：`0.1.1`
-- GitHub Release tag：`v0.1.1`
+- MOD 版本：`0.1.3`
+- GitHub Release tag：`v0.1.3`
+
+## v0.99.1 适配说明
+
+- 官方现在使用独立的 `sts2_lan_connect.json` 作为模组声明文件
+- `json` 会声明本 MOD 同时包含 `.dll` 和 `.pck`
+- 这次更新主要调整打包与安装结构，功能实现本身不变
 
 ## 目录内容
 
 - `sts2_lan_connect.dll`
 - `sts2_lan_connect.pck`
-- `mod_manifest.json`
+- `sts2_lan_connect.json`
 - `STS2_LAN_CONNECT_USER_GUIDE_ZH.md`
 - `install-sts2-lan-connect-macos.sh`
 - `install-sts2-lan-connect-windows.ps1`
