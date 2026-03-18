@@ -11,9 +11,8 @@
 .vscode/
 .vscode/.ropeproject/
 sts2-RMP-Mods/
-sts2-lan-connect/release/
-sts2-lan-connect/config.json
 local-release/
+sts2-lan-connect/config.json
 NuGet.Config
 **/.DS_Store
 **/bin/

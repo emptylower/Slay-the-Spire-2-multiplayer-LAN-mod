@@ -1,20 +1,15 @@
-# STS2 LAN Connect Release
+﻿# STS2 LAN Connect Release
 
-这是 `STS2 LAN Connect` 的发布目录。
+这是 `STS2 LAN Connect` 发布包内的 `README.md`。
 
 当前版本：
 
 - MOD 版本：`0.1.3`
 - GitHub Release tag：`v0.1.3`
 
-## v0.99.1 适配说明
+## 这个包里有什么
 
-- 官方现在使用独立的 `sts2_lan_connect.json` 作为模组声明文件
-- `json` 会声明本 MOD 同时包含 `.dll` 和 `.pck`
-- 这次更新主要调整打包与安装结构，功能实现本身不变
-
-## 目录内容
-
+- `README.md`
 - `sts2_lan_connect.dll`
 - `sts2_lan_connect.pck`
 - `sts2_lan_connect.json`
@@ -31,6 +26,12 @@
 - 多人首页新增 `局域网继续`
 - Join 页面新增 `LAN IP` 输入框和 `Join via IP`
 - 房主地址弹窗支持一键复制 `IP:Port`
+
+## v0.99.1 打包说明
+
+- 官方现在以独立的 `sts2_lan_connect.json` 作为模组声明文件
+- `json` 会声明本 MOD 同时包含 `.dll` 和 `.pck`
+- 本包已经按新结构组织好，直接解压后安装即可
 
 ## 一键安装
 
@@ -79,6 +80,10 @@ install-sts2-lan-connect-windows.bat
 ```text
 33771
 ```
+
+更详细的玩家说明见：
+
+- `STS2_LAN_CONNECT_USER_GUIDE_ZH.md`
 
 ## 兼容性说明
 
