@@ -9,18 +9,24 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
     <UserHome>$([System.Environment]::GetFolderPath(System.Environment+SpecialFolder.UserProfile))</UserHome>
+    <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
+    <IsMacOS Condition="'$(OS)' != 'Windows_NT' and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'True'">true</IsMacOS>
+    <IsLinux Condition="'$(OS)' != 'Windows_NT' and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'True'">true</IsLinux>
 
-    <Sts2Root Condition="'$(Sts2Root)' == '' and '$(OS)' == 'Windows_NT'">C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2</Sts2Root>
-    <Sts2Root Condition="'$(Sts2Root)' == '' and '$(OS)' != 'Windows_NT'">$(UserHome)/Library/Application Support/Steam/steamapps/common/Slay the Spire 2</Sts2Root>
+    <Sts2Root Condition="'$(Sts2Root)' == '' and '$(IsWindows)' == 'true'">C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2</Sts2Root>
+    <Sts2Root Condition="'$(Sts2Root)' == '' and '$(IsMacOS)' == 'true'">$(UserHome)/Library/Application Support/Steam/steamapps/common/Slay the Spire 2</Sts2Root>
+    <Sts2Root Condition="'$(Sts2Root)' == '' and '$(IsLinux)' == 'true'">$(UserHome)/.local/share/Steam/steamapps/common/Slay the Spire 2</Sts2Root>
 
     <Sts2MacApp>$(Sts2Root)/SlayTheSpire2.app</Sts2MacApp>
 
-    <Sts2DataDir Condition="'$(Sts2DataDir)' == '' and '$(OS)' == 'Windows_NT'">$(Sts2Root)\data_sts2_windows_x86_64</Sts2DataDir>
-    <Sts2DataDir Condition="'$(Sts2DataDir)' == '' and '$(OS)' != 'Windows_NT' and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64'">$(Sts2MacApp)/Contents/Resources/data_sts2_macos_arm64</Sts2DataDir>
-    <Sts2DataDir Condition="'$(Sts2DataDir)' == '' and '$(OS)' != 'Windows_NT' and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' != 'Arm64'">$(Sts2MacApp)/Contents/Resources/data_sts2_macos_x86_64</Sts2DataDir>
+    <Sts2DataDir Condition="'$(Sts2DataDir)' == '' and '$(IsWindows)' == 'true'">$(Sts2Root)\data_sts2_windows_x86_64</Sts2DataDir>
+    <Sts2DataDir Condition="'$(Sts2DataDir)' == '' and '$(IsMacOS)' == 'true' and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64'">$(Sts2MacApp)/Contents/Resources/data_sts2_macos_arm64</Sts2DataDir>
+    <Sts2DataDir Condition="'$(Sts2DataDir)' == '' and '$(IsMacOS)' == 'true' and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' != 'Arm64'">$(Sts2MacApp)/Contents/Resources/data_sts2_macos_x86_64</Sts2DataDir>
+    <Sts2DataDir Condition="'$(Sts2DataDir)' == '' and '$(IsLinux)' == 'true'">$(Sts2Root)/data_sts2_linuxbsd_x86_64</Sts2DataDir>
 
-    <Sts2ModsDir Condition="'$(Sts2ModsDir)' == '' and '$(OS)' == 'Windows_NT'">$(Sts2Root)\mods\$(AssemblyName)</Sts2ModsDir>
-    <Sts2ModsDir Condition="'$(Sts2ModsDir)' == '' and '$(OS)' != 'Windows_NT'">$(Sts2MacApp)/Contents/MacOS/mods/$(AssemblyName)</Sts2ModsDir>
+    <Sts2ModsDir Condition="'$(Sts2ModsDir)' == '' and '$(IsWindows)' == 'true'">$(Sts2Root)\mods\$(AssemblyName)</Sts2ModsDir>
+    <Sts2ModsDir Condition="'$(Sts2ModsDir)' == '' and '$(IsMacOS)' == 'true'">$(Sts2MacApp)/Contents/MacOS/mods/$(AssemblyName)</Sts2ModsDir>
+    <Sts2ModsDir Condition="'$(Sts2ModsDir)' == '' and '$(IsLinux)' == 'true'">$(Sts2Root)/mods/$(AssemblyName)</Sts2ModsDir>
   </PropertyGroup>
 
   <ItemGroup>
