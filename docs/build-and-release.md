@@ -36,6 +36,12 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build-sts2-lan-connect-window
 ./scripts/build-sts2-lan-connect.sh
 ```
 
+### Linux
+
+```bash
+./scripts/build-sts2-lan-connect.sh
+```
+
 ## 打包脚本
 
 ### Windows
@@ -45,6 +51,12 @@ powershell -ExecutionPolicy Bypass -File .\scripts\package-sts2-lan-connect-wind
 ```
 
 ### macOS
+
+```bash
+./scripts/package-sts2-lan-connect.sh
+```
+
+### Linux
 
 ```bash
 ./scripts/package-sts2-lan-connect.sh
@@ -68,9 +80,17 @@ chmod +x ./scripts/install-sts2-lan-connect-macos.sh
 ./scripts/install-sts2-lan-connect-macos.sh --package-dir ./local-release/sts2_lan_connect
 ```
 
+### Linux
+
+```bash
+chmod +x ./scripts/install-sts2-lan-connect-linux.sh
+./scripts/install-sts2-lan-connect-linux.sh --package-dir ./local-release/sts2_lan_connect
+```
+
 如果只想安装 MOD，不想同步存档：
 
 - Windows：追加 `-NoSaveSync`
+- Linux：追加 `--no-save-sync`
 - macOS：追加 `--no-save-sync`
 
 ## 输出位置
@@ -90,6 +110,7 @@ chmod +x ./scripts/install-sts2-lan-connect-macos.sh
 | `local-release/sts2_lan_connect/` | 本地发布目录 |
 | `local-release/sts2_lan_connect-v<version>-windows.zip` | 本地 Windows 包 |
 | `local-release/sts2_lan_connect-v<version>-macos.zip` | 本地 macOS 包 |
+| `local-release/sts2_lan_connect-v<version>-linux.zip` | 本地 Linux 包 |
 
 ### 仓库发布包
 

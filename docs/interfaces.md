@@ -69,7 +69,7 @@
 | `-ModsDir` | `string` | 指定复制到哪个 MOD 目录 |
 | `-SkipInstallCopy` | `switch` | 只构建，不复制到游戏目录 |
 
-### macOS `build-sts2-lan-connect.sh`
+### macOS / Linux `build-sts2-lan-connect.sh`
 
 | 选项 | 含义 |
 | --- | --- |
@@ -89,7 +89,7 @@
 | `-GodotBin` | `string` | Godot 可执行文件 |
 | `-DotnetBin` | `string` | dotnet 可执行文件 |
 
-### macOS `package-sts2-lan-connect.sh`
+### macOS / Linux `package-sts2-lan-connect.sh`
 
 使用环境变量：
 
@@ -120,6 +120,15 @@
 | `--package-dir <path>` | 发布包目录 |
 | `--no-save-sync` | 跳过存档同步 |
 
+### Linux `install-sts2-lan-connect-linux.sh`
+
+| 选项 | 含义 |
+| --- | --- |
+| `--game-dir <path>` | 游戏根目录 |
+| `--data-dir <path>` | 用户存档目录 |
+| `--package-dir <path>` | 发布包目录 |
+| `--no-save-sync` | 跳过存档同步 |
+
 ## 6. 发布包内容契约
 
 本地发布目录 `local-release/sts2_lan_connect/` 内应包含：
@@ -129,6 +138,7 @@
 - `sts2_lan_connect.pck`
 - `README.md`
 - `STS2_LAN_CONNECT_USER_GUIDE_ZH.md`
+- `install-sts2-lan-connect-linux.sh`
 - `install-sts2-lan-connect-macos.sh`
 - `install-sts2-lan-connect-windows.ps1`
 - `install-sts2-lan-connect-windows.bat`

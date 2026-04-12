@@ -54,6 +54,7 @@
 ```bash
 ./scripts/build-sts2-lan-connect.sh
 ./scripts/package-sts2-lan-connect.sh
+./scripts/install-sts2-lan-connect-linux.sh --package-dir ./local-release/sts2_lan_connect
 ```
 
 ```powershell
@@ -71,13 +72,14 @@ powershell -ExecutionPolicy Bypass -File .\scripts\package-sts2-lan-connect-wind
 | DLL | `sts2-lan-connect/.godot/mono/temp/bin/Debug/sts2_lan_connect.dll` | C# 编译输出 |
 | PCK | `sts2-lan-connect/build/sts2_lan_connect.pck` | Godot 打包输出 |
 | 本地打包目录 | `local-release/sts2_lan_connect/` | 本地发布目录 |
-| 本地 zip | `local-release/sts2_lan_connect-v0.1.3-windows.zip` | 本地 Windows 包 |
+| 本地 zip | `local-release/sts2_lan_connect-v0.1.3-linux.zip` / `...-macos.zip` / `...-windows.zip` | 本地平台对应的打包产物 |
 | 仓库发布包 | `releases/sts2_lan_connect-v0.1.3-windows.zip` | 提交到仓库的预编译包 |
 
 安装目标：
 
 - Windows：`<SteamLibrary>/steamapps/common/Slay the Spire 2/mods/sts2_lan_connect/`
 - macOS：`<SteamLibrary>/steamapps/common/Slay the Spire 2/SlayTheSpire2.app/Contents/MacOS/mods/sts2_lan_connect/`
+- Linux：`<SteamLibrary>/steamapps/common/Slay the Spire 2/mods/sts2_lan_connect/`
 
 ## Release 说明
 

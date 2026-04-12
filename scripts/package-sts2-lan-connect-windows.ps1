@@ -37,6 +37,7 @@ Copy-Item $PckFile -Destination $PackageRoot -Force
 Copy-Item $ManifestPath -Destination $PackageRoot -Force
 Copy-Item (Join-Path $RootDir "RELEASE_README.md") -Destination (Join-Path $PackageRoot "README.md") -Force
 Copy-Item $GuidePath -Destination (Join-Path $PackageRoot "STS2_LAN_CONNECT_USER_GUIDE_ZH.md") -Force
+Copy-Item (Join-Path $RootDir "scripts\install-sts2-lan-connect-linux.sh") -Destination $PackageRoot -Force
 Copy-Item (Join-Path $RootDir "scripts\install-sts2-lan-connect-macos.sh") -Destination $PackageRoot -Force
 Copy-Item (Join-Path $RootDir "scripts\install-sts2-lan-connect-windows.ps1") -Destination $PackageRoot -Force
 Copy-Item (Join-Path $RootDir "scripts\install-sts2-lan-connect-windows.bat") -Destination $PackageRoot -Force

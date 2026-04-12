@@ -14,6 +14,7 @@
 - `sts2_lan_connect.pck`
 - `sts2_lan_connect.json`
 - `STS2_LAN_CONNECT_USER_GUIDE_ZH.md`
+- `install-sts2-lan-connect-linux.sh`
 - `install-sts2-lan-connect-macos.sh`
 - `install-sts2-lan-connect-windows.ps1`
 - `install-sts2-lan-connect-windows.bat`
@@ -34,6 +35,13 @@
 - 本包已经按新结构组织好，直接解压后安装即可
 
 ## 一键安装
+
+### Linux
+
+```bash
+chmod +x ./install-sts2-lan-connect-linux.sh
+./install-sts2-lan-connect-linux.sh
+```
 
 ### macOS
 
@@ -64,6 +72,7 @@ install-sts2-lan-connect-windows.bat
 
 如果只想安装，不想同步存档：
 
+- Linux：`./install-sts2-lan-connect-linux.sh --no-save-sync`
 - macOS：`./install-sts2-lan-connect-macos.sh --no-save-sync`
 - Windows：`powershell -ExecutionPolicy Bypass -File .\install-sts2-lan-connect-windows.ps1 -NoSaveSync`
 
