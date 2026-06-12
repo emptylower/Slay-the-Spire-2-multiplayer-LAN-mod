@@ -84,6 +84,7 @@
 
 - `install-sts2-lan-connect-windows.ps1`
 - `install-sts2-lan-connect-windows.bat`
+- `install-sts2-lan-connect-linux.sh`
 - `install-sts2-lan-connect-macos.sh`
   把发布包安装到游戏目录，并做一次单向存档同步
 

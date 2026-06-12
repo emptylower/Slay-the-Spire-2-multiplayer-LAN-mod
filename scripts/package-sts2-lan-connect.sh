@@ -12,11 +12,25 @@ DLL_FILE="$PROJECT_DIR/.godot/mono/temp/bin/Debug/$ASSEMBLY_NAME.dll"
 MANIFEST_FILE="$PROJECT_DIR/$ASSEMBLY_NAME.json"
 GUIDE_FILE="$ROOT_DIR/docs/STS2_LAN_CONNECT_USER_GUIDE_ZH.md"
 RELEASE_README="$ROOT_DIR/RELEASE_README.md"
+LINUX_INSTALLER="$ROOT_DIR/scripts/install-sts2-lan-connect-linux.sh"
 MAC_INSTALLER="$ROOT_DIR/scripts/install-sts2-lan-connect-macos.sh"
 WIN_INSTALLER="$ROOT_DIR/scripts/install-sts2-lan-connect-windows.ps1"
 WIN_INSTALLER_BAT="$ROOT_DIR/scripts/install-sts2-lan-connect-windows.bat"
 MOD_VERSION="$(grep -E '"version"' "$MANIFEST_FILE" | head -n 1 | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')"
 RELEASE_VERSION="v$MOD_VERSION"
+
+case "$(uname -s)" in
+  Darwin)
+    PLATFORM_SUFFIX="macos"
+    ;;
+  Linux)
+    PLATFORM_SUFFIX="linux"
+    ;;
+  *)
+    echo "Unsupported host platform: $(uname -s)" >&2
+    exit 1
+    ;;
+esac
 
 BUILD_ARGS=()
 [[ -n "${STS2_ROOT:-}" ]] && BUILD_ARGS+=(--game-dir "$STS2_ROOT")
@@ -32,11 +46,12 @@ cp "$PCK_FILE" "$PACKAGE_ROOT/"
 cp "$MANIFEST_FILE" "$PACKAGE_ROOT/"
 cp "$RELEASE_README" "$PACKAGE_ROOT/README.md"
 cp "$GUIDE_FILE" "$PACKAGE_ROOT/STS2_LAN_CONNECT_USER_GUIDE_ZH.md"
+cp "$LINUX_INSTALLER" "$PACKAGE_ROOT/"
 cp "$MAC_INSTALLER" "$PACKAGE_ROOT/"
 cp "$WIN_INSTALLER" "$PACKAGE_ROOT/"
 cp "$WIN_INSTALLER_BAT" "$PACKAGE_ROOT/"
 
 cd "$LOCAL_RELEASE_DIR"
-rm -f "${ASSEMBLY_NAME}"*-macos.zip
-zip -qr "${ASSEMBLY_NAME}-${RELEASE_VERSION}-macos.zip" "$ASSEMBLY_NAME"
-echo "Package created at: $LOCAL_RELEASE_DIR/${ASSEMBLY_NAME}-${RELEASE_VERSION}-macos.zip"
+rm -f "${ASSEMBLY_NAME}"*-"$PLATFORM_SUFFIX".zip
+zip -qr "${ASSEMBLY_NAME}-${RELEASE_VERSION}-${PLATFORM_SUFFIX}.zip" "$ASSEMBLY_NAME"
+echo "Package created at: $LOCAL_RELEASE_DIR/${ASSEMBLY_NAME}-${RELEASE_VERSION}-${PLATFORM_SUFFIX}.zip"

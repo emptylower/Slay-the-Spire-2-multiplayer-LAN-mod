@@ -46,6 +46,13 @@ powershell -ExecutionPolicy Bypass -File .\install-sts2-lan-connect-windows.ps1
 install-sts2-lan-connect-windows.bat
 ```
 
+### Linux
+
+```bash
+chmod +x ./install-sts2-lan-connect-linux.sh
+./install-sts2-lan-connect-linux.sh
+```
+
 ### macOS
 
 ```bash
@@ -56,6 +63,7 @@ chmod +x ./install-sts2-lan-connect-macos.sh
 如果只想安装 MOD，不想同步存档：
 
 - Windows：追加 `-NoSaveSync`
+- Linux：追加 `--no-save-sync`
 - macOS：追加 `--no-save-sync`
 
 ## 第一次启用
